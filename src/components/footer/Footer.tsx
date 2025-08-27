@@ -2,16 +2,15 @@ import { Link } from "react-router-dom";
 import { Facebook, Instagram, Youtube, Mail } from "lucide-react";
 
 export default function Footer() {
-
     const linkCls =
         "text-white/80 hover:text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30";
 
     return (
         <footer id="app-footer" className="relative isolate text-white">
-            <div className="w-full mt-20">
-            </div>
+            <div className="w-full mt-20" />
             <div className="mx-auto max-w-7xl px-4 pb-10 pt-8 md:px-6 md:pt-10 md:pb-12">
                 <div className="grid gap-10 md:grid-cols-12">
+                    {/* Marque */}
                     <div className="md:col-span-5 lg:col-span-4 text-center md:text-left">
                         <Link to="/" className="inline-flex items-center gap-3">
                             <img src="/logo.svg" alt="Radio4You" className="h-8 w-auto" />
@@ -37,8 +36,8 @@ export default function Footer() {
                             </a>
                         </div>
                     </div>
-                    <div className="md:col-span-7 lg:col-span-8">
-                        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="md:col-span-7 lg:col-span-8 text-center md:text-left">
+                        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 justify-items-center md:justify-items-start">
                             {/* Navigation */}
                             <nav>
                                 <h3 className="text-sm font-semibold uppercase tracking-wider text-white/70">Navigation</h3>
@@ -56,8 +55,7 @@ export default function Footer() {
                                     <li><Link to="/sponsors" className={linkCls}>Devenir sponsor</Link></li>
                                 </ul>
                             </nav>
-
-                            {/* Information */}
+                            {/* Informations */}
                             <nav>
                                 <h3 className="text-sm font-semibold uppercase tracking-wider text-white/70">Informations</h3>
                                 <ul className="mt-3 space-y-2">
@@ -69,11 +67,11 @@ export default function Footer() {
                     </div>
                 </div>
                 {/* Bas de page */}
-                <div className="mt-10 border-t border-white/10 pt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div className="mt-10 border-t border-white/10 pt-6 flex flex-col items-center gap-3 text-center md:flex-row md:items-center md:justify-between md:text-left">
                     <p className="text-xs text-white/60">
                         © {new Date().getFullYear()} Radio4You. Tous droits réservés.
                     </p>
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-white/70">
+                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-2 text-xs text-white/70">
                         <Link to="/mentions-legales" className={linkCls}>Mentions légales</Link>
                         <span aria-hidden="true" className="text-white/30">•</span>
                         <Link to="/confidentialite" className={linkCls}>Politique de confidentialité</Link>
