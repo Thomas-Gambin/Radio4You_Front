@@ -7,7 +7,7 @@ export default function Footer() {
         "text-white/80 hover:text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/30";
 
     return (
-        <footer className="relative isolate text-white">
+        <footer id="app-footer" className="relative isolate text-white">
             <div className="w-full mt-20">
             </div>
             <div className="mx-auto max-w-7xl px-4 pb-10 pt-8 md:px-6 md:pt-10 md:pb-12">

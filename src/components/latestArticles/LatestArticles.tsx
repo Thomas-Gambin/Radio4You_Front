@@ -2,34 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../../utils/api";
 import type { Article } from "../../@types/article";
-
-//Convertie en texte brut
-function stripHtml(html?: string) {
-    if (!html) return "";
-    const tmp = document.createElement("div");
-    tmp.innerHTML = html;
-    return (tmp.textContent || tmp.innerText || "").trim();
-}
-
-// Définir un nombre maximum de mot
-function truncateWords(text: string, maxWords: number) {
-    const words = text.trim().split(/\s+/);
-    return words.length <= maxWords ? text : words.slice(0, maxWords).join(" ") + "…";
-}
-
-// Met la date au format JJ/MM/AAAA
-function formatDate(d?: string | Date | null) {
-    if (!d) return "";
-    const date = typeof d === "string" ? new Date(d) : d;
-    if (isNaN(date.getTime())) return "";
-    return date.toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
-}
-
-// Récupère tous les types de l'api
-const pickMembers = (payload: any) =>
-    Array.isArray(payload)
-        ? payload
-        : payload?.member ?? payload?.["hydra:member"] ?? payload?.data ?? payload?.results ?? [];
+import { stripHtml, truncateWords, formatDate, pickMembers } from "../../utils";
 
 // Récupère les données de l'api en mettant une limit
 async function fetchLatestArticles(limit = 3, signal?: AbortSignal): Promise<Article[]> {

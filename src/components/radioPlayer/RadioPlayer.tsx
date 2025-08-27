@@ -5,7 +5,7 @@ import { usePlayer } from "../../context/PlayerContext";
 
 const CLIENT_ID = import.meta.env.VITE_JAMENDO_CLIENT_ID as string;
 
-// Converti la durée de la piste au format mm:ss
+// Converti la durée en mm:ss
 function fmtTime(sec: number) {
     if (!isFinite(sec) || sec < 0) return "0:00";
     const m = Math.floor(sec / 60);
@@ -13,7 +13,7 @@ function fmtTime(sec: number) {
     return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-// Récupère les pistes de l'api jamendo
+// Récupère l'api jamendo
 async function fetchJamendoTracks(opts: FetchOpts = {}): Promise<JamendoTrack[]> {
     if (!CLIENT_ID) throw new Error("VITE_JAMENDO_CLIENT_ID manquant");
     const { limit = 30, audioformat = "mp32" } = opts;
@@ -56,7 +56,9 @@ function useJamendoPlaylist(params: FetchOpts) {
             .then((res) => !cancelled && setTracks(res))
             .catch((e) => !cancelled && setError(e instanceof Error ? e.message : String(e)))
             .finally(() => !cancelled && setLoading(false));
-        return () => { cancelled = true; };
+        return () => {
+            cancelled = true;
+        };
     }, [JSON.stringify(params)]);
 
     return { tracks, loading, error };
@@ -93,17 +95,18 @@ export default function RadioDockRight({ className = "" }: { className?: string 
     const [volume, setVolume] = useState(0.3);
     const [progress, setProgress] = useState(0);
     const [duration, setDuration] = useState(0);
+    const [avoidPx, setAvoidPx] = useState(0);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const current = useMemo(() => tracks[index], [tracks, index]);
     const cover = current?.album_image || current?.image;
 
-    // Charge la piste
+    // Charger piste
     useEffect(() => {
         const audio = audioRef.current;
         if (current && audio) {
             audio.src = current.audio;
-            if (playing) audio.play().catch(() => { });
+            if (playing) audio.play().catch(() => { /* Bloque la lecture auto */ });
             setProgress(0);
         }
     }, [current?.id, playing]);
@@ -112,14 +115,40 @@ export default function RadioDockRight({ className = "" }: { className?: string 
     useEffect(() => {
         const a = audioRef.current;
         if (!a) return;
-        if (playing) a.play().catch(() => { });
+        if (playing) a.play().catch(() => { /* Bloque la lecture auto */ });
         else a.pause();
     }, [playing]);
 
     // Volume
-    useEffect(() => { if (audioRef.current) audioRef.current.volume = volume; }, [volume]);
+    useEffect(() => {
+        if (audioRef.current) audioRef.current.volume = volume;
+    }, [volume]);
 
-    // Handler
+    // Eviter le player sur footer en mobile
+    useEffect(() => {
+        const footer = document.getElementById("app-footer");
+        if (!footer) return;
+
+        const compute = () => {
+            const rect = footer.getBoundingClientRect();
+            const overlap = Math.max(0, window.innerHeight - rect.top);
+            setAvoidPx(overlap);
+        };
+
+        compute();
+        window.addEventListener("scroll", compute, { passive: true });
+        window.addEventListener("resize", compute);
+        const ro = new ResizeObserver(compute);
+        ro.observe(footer);
+
+        return () => {
+            window.removeEventListener("scroll", compute);
+            window.removeEventListener("resize", compute);
+            ro.disconnect();
+        };
+    }, []);
+
+    // Handlers
     const next = () => { if (tracks.length) setIndex((i) => (i + 1) % tracks.length); };
     const prev = () => { if (tracks.length) setIndex((i) => (i - 1 + tracks.length) % tracks.length); };
     const onTimeUpdate = () => {
@@ -138,9 +167,11 @@ export default function RadioDockRight({ className = "" }: { className?: string 
         <>
             <audio ref={audioRef} onTimeUpdate={onTimeUpdate} onEnded={next} preload="metadata" />
 
-            {/* Version mobile */}
-            <div className={`md:hidden fixed inset-x-0 bottom-0 z-50 border-t ${railColor} backdrop-blur ${className}`}>
-                <div className="mx-auto max-w-7xl px-3 py-2">
+            {/* Mobile */}
+            <div
+                className={`md:hidden fixed left-0 right-0 z-50 border-t ${railColor} backdrop-blur ${className}`}
+                style={{ bottom: avoidPx }}>
+                <div className="mx-auto max-w-7xl px-3 py-2 pb-[env(safe-area-inset-bottom)]">
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 overflow-hidden rounded-lg bg-white/5 shrink-0">
                             {cover ? <img src={cover} alt="" className="h-full w-full object-cover" /> : null}
@@ -154,28 +185,16 @@ export default function RadioDockRight({ className = "" }: { className?: string 
                             </div>
                         </div>
                         <div className="flex items-center gap-1">
-                            <button
-                                onClick={prev}
-                                className="rounded-lg border border-white/15 p-2 text-white hover:bg-white/5 transition"
-                                title="Précédent">
+                            <button onClick={prev} className="rounded-lg border border-white/15 p-2 text-white hover:bg-white/5 transition" title="Précédent">
                                 <SkipBack className="h-4 w-4" />
                             </button>
-                            <button
-                                onClick={togglePlay}
-                                className="rounded-lg border border-white/15 p-2.5 text-white hover:bg-white/5 transition"
-                                title="Lecture / Pause">
+                            <button onClick={togglePlay} className="rounded-lg border border-white/15 p-2.5 text-white hover:bg-white/5 transition" title="Lecture / Pause">
                                 {playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
                             </button>
-                            <button
-                                onClick={next}
-                                className="rounded-lg border border-white/15 p-2 text-white hover:bg-white/5 transition"
-                                title="Suivant">
+                            <button onClick={next} className="rounded-lg border border-white/15 p-2 text-white hover:bg-white/5 transition" title="Suivant">
                                 <SkipForward className="h-4 w-4" />
                             </button>
-                            <button
-                                onClick={() => setExpanded((e) => !e)}
-                                className="rounded-lg border border-white/15 p-2 text-white hover:bg-white/5 transition"
-                                title={expanded ? "Réduire" : "Agrandir"}>
+                            <button onClick={() => setExpanded((e) => !e)} className="rounded-lg border border-white/15 p-2 text-white hover:bg-white/5 transition" title={expanded ? "Réduire" : "Agrandir"}>
                                 {expanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
                             </button>
                         </div>
@@ -188,7 +207,8 @@ export default function RadioDockRight({ className = "" }: { className?: string 
                             max={Number.isFinite(duration) && duration > 0 ? Math.floor(duration) : 0}
                             value={Math.min(Math.floor(progress), Math.floor(duration || 0))}
                             onChange={(e) => onSeek(Number(e.target.value))}
-                            className="w-full accent-white/80" />
+                            className="w-full accent-white/80"
+                        />
                         <span className="text-[10px] tabular-nums text-white/60">{fmtTime(duration)}</span>
                     </div>
                 </div>
@@ -210,10 +230,7 @@ export default function RadioDockRight({ className = "" }: { className?: string 
                                     </div>
                                 </div>
                             </div>
-                            <button
-                                onClick={() => setExpanded(false)}
-                                className="rounded-xl border border-white/15 p-2 text-white hover:bg-white/5 transition"
-                                title="Fermer">
+                            <button onClick={() => setExpanded(false)} className="rounded-xl border border-white/15 p-2 text-white hover:bg-white/5 transition" title="Fermer">
                                 <Minimize2 className="h-5 w-5" />
                             </button>
                         </div>
@@ -265,17 +282,13 @@ export default function RadioDockRight({ className = "" }: { className?: string 
                     </div>
                 </div>
             )}
-            {/* Version desktop */}
+            {/* Desktop */}
             <aside
                 className={`hidden md:block fixed top-0 right-0 z-50 h-screen ${widthClass} border-l ${railColor} backdrop-blur transition-all duration-300 ${className}`}
                 aria-label="Lecteur Radio vertical">
                 <div className="flex h-full">
                     <div className="flex w-16 shrink-0 flex-col items-center gap-4 py-4">
-                        <button
-                            onClick={() => setExpanded((e) => !e)}
-                            className="rounded-xl border border-white/15 p-2 text-white hover:bg-white/5 transition"
-                            title={expanded ? "Réduire" : "Agrandir"}
-                        >
+                        <button onClick={() => setExpanded((e) => !e)} className="rounded-xl border border-white/15 p-2 text-white hover:bg-white/5 transition" title={expanded ? "Réduire" : "Agrandir"}>
                             {expanded ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
                         </button>
                         <div className="h-12 w-12 overflow-hidden rounded-xl bg-white/5">
@@ -307,10 +320,10 @@ export default function RadioDockRight({ className = "" }: { className?: string 
                                 max={100}
                                 value={Math.round(volume * 100)}
                                 onChange={(v) => setVolume(v / 100)}
-                                ariaLabel="Volume" />
+                                ariaLabel="Volume"
+                            />
                         </div>
                     </div>
-                    {/* Panneau détaillé */}
                     {expanded && (
                         <div className="flex min-w-0 flex-1 flex-col gap-4 p-4">
                             <div>
