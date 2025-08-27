@@ -1,9 +1,59 @@
-/* src/index.css — Tailwind v4 */
 @import "tailwindcss";
 
-html,
-body,
-#root {
-  height: 100%;
+:root {
+  --duration: 20s;
+  --copies: 10;
   background-color: #0b1321;
+}
+
+
+.sponsors-viewport {
+  overflow: hidden;
+  position: relative;
+}
+
+.sponsors-track {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  width: max-content;
+  animation: scroll var(--duration) linear infinite;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-100% / var(--copies)));
+  }
+}
+
+.sponsors-group {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.sponsor-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 220px;
+  padding: 0 2rem;
+}
+
+.sponsor-item img {
+  height: 5rem;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sponsors-track {
+    animation: none;
+    transform: none;
+  }
 }

@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom";
+import Hero from "../../components/hero/Hero"
+import SponsorsSection from "../../components/sponsorsSection/SponsorsSection";
 
 export default function Homepage() {
     return (
         <main className="min-h-[calc(100vh-64px)] bg-[#0b1321] text-white">
+            <Hero />
+            <SponsorsSection />
             <section className="mx-auto max-w-7xl px-4 py-12 md:py-16">
                 <h1 className="text-3xl font-extrabold tracking-tight md:text-5xl">
                     Bienvenue sur{" "}
