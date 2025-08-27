@@ -1,5 +1,3 @@
-import React from "react";
-
 const logos = [
     { src: "/logos/logo_SocieteGenerale.webp", alt: "Société Générale" },
     { src: "/logos/lidl.png", alt: "Lidl" },
