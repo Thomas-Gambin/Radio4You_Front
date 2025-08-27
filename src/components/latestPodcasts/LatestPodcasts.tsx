@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../../utils/api";
-import type { Article } from "../../@types/article";
+import type { Podcast } from "../../@types/podcast";
 
 //Convertie en texte brut
 function stripHtml(html?: string) {
@@ -32,36 +32,40 @@ const pickMembers = (payload: any) =>
         : payload?.member ?? payload?.["hydra:member"] ?? payload?.data ?? payload?.results ?? [];
 
 // Récupère les données de l'api en mettant une limit
-async function fetchLatestArticles(limit = 3, signal?: AbortSignal): Promise<Article[]> {
-    const { data } = await api.get("/articles", {
+async function fetchLatestPodcasts(limit = 3, signal?: AbortSignal): Promise<Podcast[]> {
+    const { data } = await api.get("/podcasts", {
         params: {
             page: 1,
             itemsPerPage: limit,
-            "order[createdAt]": "desc",
+            "order[createddAt]": "desc",
         },
         signal,
     });
+
     const raw: any[] = pickMembers(data);
-    return raw.slice(0, limit).map((a: any) => ({
-        id: a.id,
-        title: a.title ?? "Sans titre",
-        coverUrl: a.coverUrl ?? a.cover?.url ?? a.image?.url ?? a.image ?? undefined,
-        content: a.content ?? a.body ?? a.excerpt ?? "",
-        publishedAt: a.publishedAt ?? a.createdAt ?? a.date ?? null,
-    }));
+    return raw.slice(0, limit).map((p: any): Podcast => {
+        const src = p?.attributes ? { id: p.id, ...p.attributes } : p;
+        return {
+            id: src.id,
+            title: src.title ?? "Sans titre",
+            coverUrl: src.coverUrl ?? src.cover?.url ?? src.image?.url ?? src.image ?? undefined,
+            description: src.description ?? src.content ?? src.summary ?? "",
+            publishedAt: (src.publishedAt ?? src.createdAt ?? "").toString(),
+        };
+    });
 }
 
-export default function LatestArticles({ maxWords = 50 }: { maxWords?: number }) {
+export default function LatestPodcasts({ maxWords = 40 }: { maxWords?: number }) {
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState<string | null>(null);
-    const [articles, setArticles] = useState<Article[]>([]);
+    const [pods, setPods] = useState<Podcast[]>([]);
 
     useEffect(() => {
         const controller = new AbortController();
         (async () => {
             try {
-                const list = await fetchLatestArticles(3, controller.signal);
-                setArticles(list);
+                const list = await fetchLatestPodcasts(3, controller.signal);
+                setPods(list);
             } catch (e: any) {
                 if (e?.name !== "CanceledError" && e?.message !== "canceled") {
                     setErr(e?.message ?? "Erreur réseau");
@@ -73,19 +77,15 @@ export default function LatestArticles({ maxWords = 50 }: { maxWords?: number })
         return () => controller.abort();
     }, []);
 
-    const sectionBg = "#111a2c";
-    const nextBaseBg = "#0b1321";
-
     return (
-        <section id="articles" className="relative isolate" style={{ backgroundColor: sectionBg }}>
+        <section id="podcasts" className="relative isolate">
             <div className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
                 <div className="mb-6 md:mb-10 flex items-end justify-between">
-                    <h2 className="text-2xl md:text-3xl font-extrabold text-white">Derniers articles</h2>
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-white">Derniers podcasts</h2>
                     <Link
-                        to="/articles"
-                        className="hidden sm:inline-block text-sm font-semibold text-white/80 hover:text-white transition"
-                    >
-                        Tous les articles →
+                        to="/podcasts"
+                        className="hidden sm:inline-block text-sm font-semibold text-white/80 hover:text-white transition">
+                        Tous les podcasts →
                     </Link>
                 </div>
                 <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -100,45 +100,44 @@ export default function LatestArticles({ maxWords = 50 }: { maxWords?: number })
                         ))}
                     {!loading && err && (
                         <div className="col-span-full rounded-xl border border-red-400/30 bg-red-400/10 p-4 text-red-200">
-                            Erreur de chargement des articles : {err}
+                            Erreur de chargement des podcasts : {err}
                         </div>
                     )}
-                    {!loading && !err && articles.length === 0 && (
+                    {!loading && !err && pods.length === 0 && (
                         <div className="col-span-full rounded-xl border border-white/10 bg-white/5 p-6 text-white/80 text-center">
-                            Aucun article pour le moment.
+                            Aucun podcast pour le moment.
                         </div>
                     )}
                     {!loading &&
                         !err &&
-                        articles.map((a) => {
-                            const plain = truncateWords(stripHtml(a.content), maxWords);
+                        pods.map((p) => {
+                            const plain = truncateWords(stripHtml(p.description), maxWords);
                             return (
                                 <article
-                                    key={a.id}
+                                    key={p.id}
                                     className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:bg-white/[0.08] transition-transform duration-300 hover:scale-[1.03] cursor-pointer">
-                                    {a.coverUrl ? (
+                                    {p.coverUrl ? (
                                         <div className="aspect-[16/9] w-full overflow-hidden">
                                             <img
-                                                src={a.coverUrl}
-                                                alt={a.title}
-                                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                                                loading="lazy"
-                                            />
+                                                src={p.coverUrl}
+                                                alt={p.title}
+                                                className="h-full w-full object-cover"
+                                                loading="lazy" />
                                         </div>
                                     ) : (
                                         <div className="aspect-[16/9] w-full bg-white/5" />
                                     )}
                                     <div className="p-4">
                                         <time className="text-xs uppercase tracking-wide text-white/60">
-                                            {formatDate(a.publishedAt)}
+                                            {formatDate(p.publishedAt)}
                                         </time>
-                                        <h3 className="mt-1 line-clamp-2 text-lg font-bold text-white">{a.title}</h3>
+                                        <h3 className="mt-1 line-clamp-2 text-lg font-bold text-white">{p.title}</h3>
                                         {plain && <p className="mt-2 text-sm text-white/70">{plain}</p>}
                                         <div className="mt-3">
                                             <Link
-                                                to={`/articles/${a.id}`}
+                                                to={`/podcasts/${p.id}`}
                                                 className="inline-block rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold text-white hover:bg-white/5 transition">
-                                                Lire l’article
+                                                Écouter
                                             </Link>
                                         </div>
                                     </div>
@@ -148,26 +147,11 @@ export default function LatestArticles({ maxWords = 50 }: { maxWords?: number })
                 </div>
                 <div className="mt-8 sm:hidden text-center">
                     <Link
-                        to="/articles"
+                        to="/podcasts"
                         className="inline-block rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-white hover:bg-white/5 transition">
-                        Tous les articles
+                        Tous les podcasts
                     </Link>
                 </div>
-            </div>
-            <div className="w-full">
-                <svg
-                    className="h-24 md:h-28 w-full"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 1440 320"
-                    preserveAspectRatio="none"
-                    style={{ color: nextBaseBg }}
-                    aria-hidden="true">
-                    <path
-                        className="fill-current"
-                        fillOpacity="0.99"
-                        d="M0,288L60,245.3C120,203,240,117,360,112C480,107,600,181,720,229.3C840,277,960,299,1080,256C1200,213,1320,107,1380,53.3L1440,0L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"
-                        fill="currentColor" />
-                </svg>
             </div>
         </section>
     );

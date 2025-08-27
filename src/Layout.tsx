@@ -3,6 +3,7 @@ import Header from "./components/header/Header";
 import ContextWrappers from "./components/ContextWrappers";
 import ScrollToTop from "./components/ScrollToTop";
 import RadioPlayer from "./components/radioPlayer/RadioPlayer";
+import Footer from "./components/footer/Footer";
 
 export default function Layout() {
     return (
@@ -13,5 +14,6 @@ export default function Layout() {
             <main className="pt-16">
                 <Outlet />
             </main>
+            <Footer />
         </ContextWrappers>);
 };
