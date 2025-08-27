@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../App";
+import { usePlayer } from "../../context/PlayerContext";
 
 export default function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const toggleMenu = () => setMenuOpen((prev) => !prev);
     const closeMenu = () => setMenuOpen(false);
+
+    const { start } = usePlayer();
 
     return (
         <header
@@ -38,16 +41,13 @@ export default function Header() {
                         </Link>
                     ))}
                 </nav>
-
-                {/*hamburger*/}
                 <div className="flex items-center gap-3">
-                    <Link
-                        to={ROUTES.HOME}
-                        className="hidden md:inline-block rounded-2xl bg-[#3dd267] px-6 py-3 text-base font-bold text-[#0b1321] shadow-[0_6px_20px_rgba(61,210,103,0.35)] hover:brightness-110 transition leading-none"
-                    >
+                    <button
+                        onClick={start}
+                        className="hidden md:inline-block rounded-2xl bg-[#3dd267] px-6 py-3 text-base font-bold text-[#0b1321] shadow-[0_6px_20px_rgba(61,210,103,0.35)] hover:brightness-110 transition leading-none">
                         Écouter en direct
-                    </Link>
-
+                    </button>
+                    {/*hamburger*/}
                     <button
                         className="md:hidden inline-flex items-center justify-center rounded-lg border border-white/20 p-2"
                         onClick={toggleMenu}
@@ -94,13 +94,12 @@ export default function Header() {
                             {link.label}
                         </Link>
                     ))}
-                    <Link
-                        to={ROUTES.HOME}
-                        onClick={closeMenu}
+                    <button
+                        onClick={() => { start(); closeMenu(); }}
                         className="mt-3 rounded-xl bg-[#3dd267] px-4 py-3 text-center text-base font-bold text-[#0b1321] shadow-[0_6px_20px_rgba(61,210,103,0.35)] hover:brightness-110 transition leading-none"
                     >
                         Écouter en direct
-                    </Link>
+                    </button>
                 </nav>
             </div>
 
