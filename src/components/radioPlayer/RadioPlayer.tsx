@@ -5,7 +5,7 @@ import { usePlayer } from "../../context/PlayerContext";
 
 const CLIENT_ID = import.meta.env.VITE_JAMENDO_CLIENT_ID as string;
 
-/* Utils */
+// Converti la durée de la piste au format mm:ss
 function fmtTime(sec: number) {
     if (!isFinite(sec) || sec < 0) return "0:00";
     const m = Math.floor(sec / 60);
@@ -13,7 +13,7 @@ function fmtTime(sec: number) {
     return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-/* API */
+// Récupère les pistes de l'api jamendo
 async function fetchJamendoTracks(opts: FetchOpts = {}): Promise<JamendoTrack[]> {
     if (!CLIENT_ID) throw new Error("VITE_JAMENDO_CLIENT_ID manquant");
     const { limit = 30, audioformat = "mp32" } = opts;
@@ -42,6 +42,7 @@ async function fetchJamendoTracks(opts: FetchOpts = {}): Promise<JamendoTrack[]>
     }));
 }
 
+// Récupère une playlist jamendo
 function useJamendoPlaylist(params: FetchOpts) {
     const [tracks, setTracks] = useState<JamendoTrack[]>([]);
     const [loading, setLoading] = useState(true);
@@ -61,7 +62,6 @@ function useJamendoPlaylist(params: FetchOpts) {
     return { tracks, loading, error };
 }
 
-/* Slider vertical (range rotaté) */
 function VerticalSlider({
     min, max, step = 1, value, onChange, ariaLabel
 }: {
@@ -98,7 +98,7 @@ export default function RadioDockRight({ className = "" }: { className?: string 
     const current = useMemo(() => tracks[index], [tracks, index]);
     const cover = current?.album_image || current?.image;
 
-    /* Charger piste + lecture si playing */
+    // Charge la piste
     useEffect(() => {
         const audio = audioRef.current;
         if (current && audio) {
@@ -108,7 +108,7 @@ export default function RadioDockRight({ className = "" }: { className?: string 
         }
     }, [current?.id, playing]);
 
-    /* Sync play/pause avec contexte */
+    // Sync play/pause
     useEffect(() => {
         const a = audioRef.current;
         if (!a) return;
@@ -116,10 +116,10 @@ export default function RadioDockRight({ className = "" }: { className?: string 
         else a.pause();
     }, [playing]);
 
-    /* Volume */
+    // Volume
     useEffect(() => { if (audioRef.current) audioRef.current.volume = volume; }, [volume]);
 
-    /* Handlers */
+    // Handler
     const next = () => { if (tracks.length) setIndex((i) => (i + 1) % tracks.length); };
     const prev = () => { if (tracks.length) setIndex((i) => (i - 1 + tracks.length) % tracks.length); };
     const onTimeUpdate = () => {
@@ -196,7 +196,6 @@ export default function RadioDockRight({ className = "" }: { className?: string 
             {expanded && (
                 <div className="md:hidden fixed inset-0 z-[60] bg-[#0b1321]/95 backdrop-blur">
                     <div className="mx-auto max-w-7xl p-4 flex h-full flex-col gap-4">
-                        {/* Header panneau */}
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3 min-w-0">
                                 <div className="h-14 w-14 overflow-hidden rounded-xl bg-white/5 shrink-0">

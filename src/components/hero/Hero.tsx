@@ -17,14 +17,12 @@ export default function Hero() {
                     <div className="mt-8 flex flex-wrap justify-center md:justify-start gap-3">
                         <a
                             href="#direct"
-                            className="rounded-2xl border border-white/15 px-6 py-3 text-base font-semibold text-white hover:bg-white/5 transition"
-                        >
+                            className="rounded-2xl border border-white/15 px-6 py-3 text-base font-semibold text-white hover:bg-white/5 transition">
                             Voir les articles
                         </a>
                         <a
                             href="#podcasts"
-                            className="rounded-2xl border border-white/15 px-6 py-3 text-base font-semibold text-white hover:bg-white/5 transition"
-                        >
+                            className="rounded-2xl border border-white/15 px-6 py-3 text-base font-semibold text-white hover:bg-white/5 transition">
                             Voir les podcasts
                         </a>
                     </div>
@@ -38,7 +36,6 @@ export default function Hero() {
                             className="mx-auto md:mx-0 h-auto rounded-[1.75rem] object-cover w-64 sm:w-80 md:w-[620px] lg:w-[760px] xl:w-[900px] 2xl:w-[1040px]" />
                     </div>
                 </div>
-
             </div>
             <div className="h-10 md:h-16" />
         </section>

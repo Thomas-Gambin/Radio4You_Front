@@ -22,6 +22,9 @@ export default function Header() {
                     className="flex items-center gap-3"
                 >
                     <img className="h-15 object-contain" src="/logo.svg" alt="Logo Dev4You" />
+                    <span className="hidden sm:inline-block text-base md:text-2xl font-extrabold leading-none">
+                        Radio<span className="text-[#3dd267]">4You</span>
+                    </span>
                 </Link>
                 {/* Nav desktop */}
                 <nav className="absolute left-1/2 hidden -translate-x-1/2 md:flex items-center gap-12">
@@ -29,7 +32,6 @@ export default function Header() {
                         { label: "Accueil", to: ROUTES.HOME },
                         { label: "Articles", to: ROUTES.HOME },
                         { label: "Podcast", to: ROUTES.HOME },
-                        { label: "Contact", to: ROUTES.HOME },
                     ].map((link) => (
                         <Link
                             key={link.label}
@@ -83,7 +85,6 @@ export default function Header() {
                         { label: "Accueil", to: ROUTES.HOME },
                         { label: "Articles", to: ROUTES.HOME },
                         { label: "Podcast", to: ROUTES.HOME },
-                        { label: "Contact", to: ROUTES.HOME },
                     ].map((link) => (
                         <Link
                             key={link.label}
