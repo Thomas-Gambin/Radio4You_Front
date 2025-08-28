@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../../utils/api";
+import { ROUTES } from "../../App";
 import type { Article } from "../../@types/article";
 import { stripHtml, truncateWords, formatDate, pickMembers, Colors } from "../../utils/index";
 
@@ -54,9 +55,8 @@ export default function LatestArticles({ maxWords = 50 }: { maxWords?: number })
                         Derniers articles
                     </h2>
                     <Link
-                        to="/articles"
-                        className="hidden sm:inline-block text-sm font-semibold text-white/80 hover:text-white transition"
-                    >
+                        to={ROUTES.ARTICLES}
+                        className="hidden sm:inline-block text-sm font-semibold text-white/80 hover:text-white transition">
                         Tous les articles →
                     </Link>
                 </div>

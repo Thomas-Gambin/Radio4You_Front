@@ -1,3 +1,6 @@
+import { ROUTES } from "../../App";
+import { Link } from "react-router-dom";
+
 export default function Hero() {
     return (
         <section className="relative isolate overflow-hidden bg-[#0b1321] pt-20 md:pt-24">
@@ -15,11 +18,11 @@ export default function Hero() {
                         Branchez-vous et profitez-en partout où que vous soyez.
                     </p>
                     <div className="mt-8 flex flex-wrap justify-center md:justify-start gap-3">
-                        <a
-                            href="#direct"
+                        <Link
+                            to={ROUTES.ARTICLES}
                             className="rounded-2xl border border-white/15 px-6 py-3 text-base font-semibold text-white hover:bg-white/5 transition">
                             Voir les articles
-                        </a>
+                        </Link>
                         <a
                             href="#podcasts"
                             className="rounded-2xl border border-white/15 px-6 py-3 text-base font-semibold text-white hover:bg-white/5 transition">

@@ -30,7 +30,7 @@ export default function Header() {
                 <nav className="absolute left-1/2 hidden -translate-x-1/2 md:flex items-center gap-12">
                     {[
                         { label: "Accueil", to: ROUTES.HOME },
-                        { label: "Articles", to: ROUTES.HOME },
+                        { label: "Articles", to: ROUTES.ARTICLES },
                         { label: "Podcast", to: ROUTES.HOME },
                     ].map((link) => (
                         <Link
