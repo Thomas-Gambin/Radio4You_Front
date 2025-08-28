@@ -31,7 +31,7 @@ export default function Header() {
                     {[
                         { label: "Accueil", to: ROUTES.HOME },
                         { label: "Articles", to: ROUTES.ARTICLES },
-                        { label: "Podcast", to: ROUTES.HOME },
+                        { label: "Podcast", to: ROUTES.PODCASTS },
                     ].map((link) => (
                         <Link
                             key={link.label}
@@ -83,22 +83,20 @@ export default function Header() {
                 <nav className="flex flex-col items-center gap-4 py-3 text-white">
                     {[
                         { label: "Accueil", to: ROUTES.HOME },
-                        { label: "Articles", to: ROUTES.HOME },
-                        { label: "Podcast", to: ROUTES.HOME },
+                        { label: "Articles", to: ROUTES.ARTICLES },
+                        { label: "Podcast", to: ROUTES.PODCASTS },
                     ].map((link) => (
                         <Link
                             key={link.label}
                             to={link.to}
                             onClick={closeMenu}
-                            className="rounded-md px-3 py-2 text-lg font-semibold leading-none hover:bg-white/5"
-                        >
+                            className="rounded-md px-3 py-2 text-lg font-semibold leading-none hover:bg-white/5">
                             {link.label}
                         </Link>
                     ))}
                     <button
                         onClick={() => { start(); closeMenu(); }}
-                        className="mt-3 rounded-xl bg-[#3dd267] px-4 py-3 text-center text-base font-bold text-[#0b1321] shadow-[0_6px_20px_rgba(61,210,103,0.35)] hover:brightness-110 transition leading-none"
-                    >
+                        className="mt-3 rounded-xl bg-[#3dd267] px-4 py-3 text-center text-base font-bold text-[#0b1321] shadow-[0_6px_20px_rgba(61,210,103,0.35)] hover:brightness-110 transition leading-none">
                         Écouter en direct
                     </button>
                 </nav>

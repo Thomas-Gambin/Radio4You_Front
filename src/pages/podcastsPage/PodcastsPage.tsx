@@ -1,16 +1,17 @@
+// pages/podcastsPage/PodcastsPage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import type { Article } from "../../@types/article";
+import type { Podcast } from "../../@types/podcast";
 import type { FetchResults } from "../../@types/fetchResults";
 import Card from "../../components/card/Card";
 import { pickMembers } from "../../utils";
 import { api } from "../../utils/api";
 import { ROUTES } from "../../App";
 
-// Définie le nombre d'article qu'on affiche par requete
+// Définie le nombre de podcasts qu'on affiche par requête
 const BATCH = 6;
 
-// Récupère les info de l'url
+// Récupère les infos de l'url
 function getPageFromUrl(u?: string | null): number | null {
     if (!u) return null;
     try {
@@ -22,9 +23,9 @@ function getPageFromUrl(u?: string | null): number | null {
     }
 }
 
-// Récupère toutes les données d'articles depuis l'api avec pagination etc...
-async function fetchArticles(page: number, limit: number, signal?: AbortSignal): Promise<FetchResults<Article>> {
-    const { data } = await api.get("/articles", {
+// Récupère toutes les données de podcasts depuis l'API avec pagination etc...
+async function fetchPodcasts(page: number, limit: number, signal?: AbortSignal): Promise<FetchResults<Podcast>> {
+    const { data } = await api.get("/podcasts", {
         params: {
             page,
             itemsPerPage: limit,
@@ -35,7 +36,7 @@ async function fetchArticles(page: number, limit: number, signal?: AbortSignal):
         headers: { Accept: "application/ld+json" },
     });
 
-    const items = pickMembers<Article>(data);
+    const items = pickMembers<Podcast>(data);
     const view = data?.["hydra:view"] ?? {};
     const lastPage = getPageFromUrl(view?.["hydra:last"]);
     const hasNext = Boolean(view?.["hydra:next"]);
@@ -45,9 +46,9 @@ async function fetchArticles(page: number, limit: number, signal?: AbortSignal):
 }
 
 // Prépare les éléments de la page
-export default function ArticlesPage() {
+export default function PodcastsPage() {
     const [page, setPage] = useState(1);
-    const [items, setItems] = useState<Article[]>([]);
+    const [items, setItems] = useState<Podcast[]>([]);
     const [lastPage, setLastPage] = useState<number | null>(null);
     const [hasNext, setHasNext] = useState(false);
     const [lastBatchCount, setLastBatchCount] = useState(0);
@@ -60,12 +61,11 @@ export default function ArticlesPage() {
             setLoading(true);
             setError(null);
             try {
-                const { items: batch, lastPage, hasNext, lastBatchCount } = await fetchArticles(
+                const { items: batch, lastPage, hasNext, lastBatchCount } = await fetchPodcasts(
                     page,
                     BATCH,
                     controller.signal
                 );
-
 
                 setItems((prev) => (page === 1 ? batch : [...prev, ...batch]));
                 setLastPage(lastPage);
@@ -82,7 +82,7 @@ export default function ArticlesPage() {
         return () => controller.abort();
     }, [page]);
 
-    // Permet de savoir si il reste des articles
+    // Permet de savoir si il reste des podcasts
     const hasMore = useMemo(() => {
         if (lastPage !== null) return page < lastPage;
         if (hasNext) return true;
@@ -93,7 +93,7 @@ export default function ArticlesPage() {
         <section className="relative isolate">
             <div className="mx-auto max-w-7xl px-4 py-10 md:px-6 md:py-14">
                 <div className="mb-6 md:mb-8 flex items-center justify-between">
-                    <h1 className="text-2xl md:text-3xl font-extrabold text-white text-center md:text-left w-full">Tous les articles</h1>
+                    <h1 className="text-2xl md:text-3xl font-extrabold text-white text-center md:text-left w-full">Tous les podcasts</h1>
                     <Link
                         to={ROUTES.HOME}
                         className="hidden sm:inline-block text-sm font-semibold text-white/80 hover:text-white transition">
@@ -117,11 +117,11 @@ export default function ArticlesPage() {
                     )}
                     {!loading && !error && items.length === 0 && (
                         <div className="col-span-full rounded-xl border border-white/10 bg-white/5 p-6 text-white/80 text-center">
-                            Aucun article pour le moment.
+                            Aucun podcast pour le moment.
                         </div>
                     )}
                     {items.map((it) => (
-                        <Card key={it.id} type="article" item={it} />
+                        <Card key={it.id} type="podcast" item={it} />
                     ))}
                 </div>
                 <div className="mt-10 text-center">

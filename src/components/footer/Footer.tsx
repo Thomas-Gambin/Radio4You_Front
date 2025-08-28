@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Youtube, Mail } from "lucide-react";
+import { ROUTES } from "../../App";
 
 export default function Footer() {
     const linkCls =
@@ -12,7 +13,7 @@ export default function Footer() {
                 <div className="grid gap-10 md:grid-cols-12">
                     {/* Marque */}
                     <div className="md:col-span-5 lg:col-span-4 text-center md:text-left">
-                        <Link to="/" className="inline-flex items-center gap-3">
+                        <Link to={ROUTES.HOME} className="inline-flex items-center gap-3">
                             <img src="/logo.svg" alt="Radio4You" className="h-8 w-auto" />
                             <span className="text-xl font-extrabold leading-none">
                                 Radio<span className="text-[#3dd267]">4You</span>
@@ -42,9 +43,9 @@ export default function Footer() {
                             <nav>
                                 <h3 className="text-sm font-semibold uppercase tracking-wider text-white/70">Navigation</h3>
                                 <ul className="mt-3 space-y-2">
-                                    <li><Link to="/" className={linkCls}>Accueil</Link></li>
-                                    <li><Link to="/articles" className={linkCls}>Articles</Link></li>
-                                    <li><Link to="/podcasts" className={linkCls}>Podcasts</Link></li>
+                                    <li><Link to={ROUTES.HOME} className={linkCls}>Accueil</Link></li>
+                                    <li><Link to={ROUTES.ARTICLES} className={linkCls}>Articles</Link></li>
+                                    <li><Link to={ROUTES.PODCASTS} className={linkCls}>Podcasts</Link></li>
                                 </ul>
                             </nav>
                             {/* Ressources */}

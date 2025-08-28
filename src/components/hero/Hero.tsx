@@ -23,11 +23,11 @@ export default function Hero() {
                             className="rounded-2xl border border-white/15 px-6 py-3 text-base font-semibold text-white hover:bg-white/5 transition">
                             Voir les articles
                         </Link>
-                        <a
-                            href="#podcasts"
+                        <Link
+                            to={ROUTES.PODCASTS}
                             className="rounded-2xl border border-white/15 px-6 py-3 text-base font-semibold text-white hover:bg-white/5 transition">
                             Voir les podcasts
-                        </a>
+                        </Link>
                     </div>
                 </div>
                 {/* Image */}
