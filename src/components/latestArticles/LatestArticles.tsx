@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../../utils/api";
 import type { Article } from "../../@types/article";
-import { stripHtml, truncateWords, formatDate, pickMembers } from "../../utils";
+import { stripHtml, truncateWords, formatDate, pickMembers, Colors } from "../../utils";
 
 // Récupère les données de l'api en mettant une limit
 async function fetchLatestArticles(limit = 3, signal?: AbortSignal): Promise<Article[]> {
@@ -46,14 +46,13 @@ export default function LatestArticles({ maxWords = 50 }: { maxWords?: number })
         return () => controller.abort();
     }, []);
 
-    const sectionBg = "#111a2c";
-    const nextBaseBg = "#0b1321";
-
     return (
-        <section id="articles" className="relative isolate" style={{ backgroundColor: sectionBg }}>
+        <section id="articles" className="relative isolate" style={{ backgroundColor: Colors.lightBg }}>
             <div className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
-                <div className="mb-6 md:mb-10 flex items-end justify-between">
-                    <h2 className="text-2xl md:text-3xl font-extrabold text-white">Derniers articles</h2>
+                <div className="mb-6 md:mb-10 flex items-center justify-center sm:items-end sm:justify-between">
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-white text-center sm:text-left">
+                        Derniers articles
+                    </h2>
                     <Link
                         to="/articles"
                         className="hidden sm:inline-block text-sm font-semibold text-white/80 hover:text-white transition"
@@ -133,7 +132,7 @@ export default function LatestArticles({ maxWords = 50 }: { maxWords?: number })
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 1440 320"
                     preserveAspectRatio="none"
-                    style={{ color: nextBaseBg }}
+                    style={{ color: Colors.baseBg }}
                     aria-hidden="true">
                     <path
                         className="fill-current"

@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Colors } from "../../utils";
 type Logo = { src: string; alt: string; href?: string };
 
 const logos: Logo[] = [
@@ -9,8 +9,6 @@ const logos: Logo[] = [
 ];
 
 export default function SponsorsSection() {
-    const sponsorsBg = "#0b1321";
-    const nextSectionBg = "#111a2c";
 
     const groupsCount = 10;
     const duration = "20s";
@@ -24,7 +22,7 @@ export default function SponsorsSection() {
         <section
             id="sponsors"
             className="relative isolate overflow-visible"
-            style={{ backgroundColor: sponsorsBg }}
+            style={{ backgroundColor: Colors.baseBg }}
             aria-labelledby="sponsors-title">
             <div className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
                 <h2
@@ -64,7 +62,7 @@ export default function SponsorsSection() {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 1440 320"
                     preserveAspectRatio="none"
-                    style={{ color: nextSectionBg }}
+                    style={{ color: Colors.lightBg }}
                     aria-hidden="true">
                     <path
                         className="fill-current"

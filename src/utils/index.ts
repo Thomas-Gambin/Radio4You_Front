@@ -30,3 +30,8 @@ export function pickMembers<T = any>(payload: unknown): T[] {
     return (p?.member ?? p?.["hydra:member"] ?? p?.data ?? p?.results ?? []) as T[];
 }
 
+export const Colors = {
+    baseBg: "#0b1321",
+    lightBg: "#111a2c"
+};
+

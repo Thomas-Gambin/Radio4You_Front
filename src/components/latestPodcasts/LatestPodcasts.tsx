@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../../utils/api";
 import type { Podcast } from "../../@types/podcast";
-import { stripHtml, truncateWords, formatDate, pickMembers } from "../../utils";
+import { stripHtml, truncateWords, formatDate, pickMembers, Colors } from "../../utils";
 
 // Récupère les données de l'api en mettant une limit
 async function fetchLatestPodcasts(limit = 3, signal?: AbortSignal): Promise<Podcast[]> {
@@ -29,6 +29,7 @@ async function fetchLatestPodcasts(limit = 3, signal?: AbortSignal): Promise<Pod
 }
 
 export default function LatestPodcasts({ maxWords = 40 }: { maxWords?: number }) {
+
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState<string | null>(null);
     const [pods, setPods] = useState<Podcast[]>([]);
@@ -51,10 +52,13 @@ export default function LatestPodcasts({ maxWords = 40 }: { maxWords?: number })
     }, []);
 
     return (
+
         <section id="podcasts" className="relative isolate">
             <div className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
-                <div className="mb-6 md:mb-10 flex items-end justify-between">
-                    <h2 className="text-2xl md:text-3xl font-extrabold text-white">Derniers podcasts</h2>
+                <div className="mb-6 md:mb-10 flex items-center justify-center sm:items-end sm:justify-between">
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-white text-center sm:text-left">
+                        Derniers podcasts
+                    </h2>
                     <Link
                         to="/podcasts"
                         className="hidden sm:inline-block text-sm font-semibold text-white/80 hover:text-white transition">
@@ -125,6 +129,21 @@ export default function LatestPodcasts({ maxWords = 40 }: { maxWords?: number })
                         Tous les podcasts
                     </Link>
                 </div>
+            </div>
+            <div className="w-full">
+                <svg
+                    className="h-28 md:h-36 w-full"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 1440 320"
+                    preserveAspectRatio="none"
+                    style={{ color: Colors.lightBg }}
+                    aria-hidden="true">
+                    <path
+                        className="fill-current"
+                        fillOpacity="0.99"
+                        d="M0,272 C240,208 480,96 720,144 C960,192 1200,256 1440,224 L1440,320 L0,320 Z"
+                        fill="currentColor" />
+                </svg>
             </div>
         </section>
     );
