@@ -3,5 +3,5 @@ export type Article = {
     title: string;
     coverUrl?: string;
     content?: string;
-    publishedAt?: string | Date | null;
+    createdAt?: string | Date | null;
 }

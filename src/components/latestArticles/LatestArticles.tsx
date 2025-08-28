@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../../utils/api";
 import type { Article } from "../../@types/article";
-import { stripHtml, truncateWords, formatDate, pickMembers, Colors } from "../../utils";
+import { stripHtml, truncateWords, formatDate, pickMembers, Colors } from "../../utils/index";
 
 // Récupère les données de l'api en mettant une limit
 async function fetchLatestArticles(limit = 3, signal?: AbortSignal): Promise<Article[]> {
@@ -102,7 +102,7 @@ export default function LatestArticles({ maxWords = 50 }: { maxWords?: number })
                                     )}
                                     <div className="p-4">
                                         <time className="text-xs uppercase tracking-wide text-white/60">
-                                            {formatDate(a.publishedAt)}
+                                            {formatDate(a.createdAt)}
                                         </time>
                                         <h3 className="mt-1 line-clamp-2 text-lg font-bold text-white">{a.title}</h3>
                                         {plain && <p className="mt-2 text-sm text-white/70">{plain}</p>}

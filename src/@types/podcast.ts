@@ -3,5 +3,5 @@ export type Podcast = {
     title: string;
     coverUrl?: string;
     description?: string;
-    publishedAt: string;
+    createdAt: string;
 }

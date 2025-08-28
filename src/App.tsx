@@ -1,9 +1,11 @@
-import { Routes, Route } from 'react-router-dom'
-import Layout from './Layout'
-import HomePage from './pages/homePage/homePage'
+import { Routes, Route } from 'react-router-dom';
+import Layout from './Layout';
+import HomePage from './pages/homePage/homePage';
+import ArticlesPage from './pages/articlesPage/ArticlesPage';
 
 export const ROUTES = {
   HOME: '/',
+  ARTICLES: '/articles'
 }
 
 export default function App() {
@@ -11,6 +13,7 @@ export default function App() {
     <Routes>
       <Route path={ROUTES.HOME} element={<Layout />}>
         <Route index element={<HomePage />} />
+        <Route path={ROUTES.ARTICLES} element={<ArticlesPage />} />
       </Route>
     </Routes>
   )
