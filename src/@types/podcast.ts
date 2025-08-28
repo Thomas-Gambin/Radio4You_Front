@@ -4,4 +4,5 @@ export type Podcast = {
     coverUrl?: string;
     description?: string;
     createdAt: string;
+    videoUrl?: string;
 }

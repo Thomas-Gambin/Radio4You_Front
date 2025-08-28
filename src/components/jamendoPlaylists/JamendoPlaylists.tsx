@@ -38,7 +38,7 @@ export default function JamendoPlaylists() {
                                 className={[
                                     "group text-left overflow-hidden rounded-2xl border border-white/10 bg-white/5",
                                     "hover:bg-white/[0.08] transform-gpu transition-transform duration-300 hover:scale-[1.03]",
-                                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
+                                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 cursor-pointer",
                                     selected ? "ring-2 ring-[#3dd267]" : "",
                                 ].join(" ")}
                                 aria-pressed={selected}>

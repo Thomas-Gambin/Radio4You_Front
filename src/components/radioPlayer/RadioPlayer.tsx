@@ -1,4 +1,3 @@
-// src/components/radioPlayer/RadioDockRight.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { JamendoTrack, FetchOpts } from "../../@types/jamendo";
 import { Play, Pause, SkipBack, SkipForward, Maximize2, Minimize2, Volume2 } from "lucide-react";
@@ -6,7 +5,7 @@ import { usePlayer } from "../../context/PlayerContext";
 
 const CLIENT_ID = import.meta.env.VITE_JAMENDO_CLIENT_ID as string;
 
-/* mm:ss */
+//Converti la durée en mm:ss
 function fmtTime(sec: number) {
     if (!isFinite(sec) || sec < 0) return "0:00";
     const m = Math.floor(sec / 60);
@@ -14,7 +13,7 @@ function fmtTime(sec: number) {
     return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-/* Fetch Jamendo */
+// Fetch l'api jamendo
 async function fetchJamendoTracks(opts: FetchOpts = {}): Promise<JamendoTrack[]> {
     if (!CLIENT_ID) throw new Error("VITE_JAMENDO_CLIENT_ID manquant");
     const { limit = 30, audioformat = "mp32" } = opts;
@@ -47,7 +46,7 @@ async function fetchJamendoTracks(opts: FetchOpts = {}): Promise<JamendoTrack[]>
     }));
 }
 
-/* Hook playlist */
+// Hooks la playlist
 function useJamendoPlaylist(params: FetchOpts) {
     const [tracks, setTracks] = useState<JamendoTrack[]>([]);
     const [loading, setLoading] = useState(true);
@@ -64,13 +63,11 @@ function useJamendoPlaylist(params: FetchOpts) {
         return () => {
             cancelled = true;
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(params)]);
 
     return { tracks, loading, error };
 }
 
-/* Slider vertical */
 function VerticalSlider({
     min, max, step = 1, value, onChange, ariaLabel
 }: {
@@ -95,8 +92,6 @@ function VerticalSlider({
 
 export default function RadioDockRight({ className = "" }: { className?: string }) {
     const { jamendoParams, playing, togglePlay } = usePlayer();
-
-    // utilise les params du contexte pour choisir la “playlist”
     const { tracks, loading, error } = useJamendoPlaylist({
         limit: 30,
         audioformat: "mp32",
@@ -114,19 +109,16 @@ export default function RadioDockRight({ className = "" }: { className?: string 
     const current = useMemo(() => tracks[index], [tracks, index]);
     const cover = current?.album_image || current?.image;
 
-    // 🔑 repartir au début quand la playlist change (SANS pause)
     const playlistKey = JSON.stringify(jamendoParams ?? {});
     useEffect(() => {
         setIndex(0);
         setProgress(0);
     }, [playlistKey]);
 
-    // clamp l'index si la nouvelle liste est plus courte
     useEffect(() => {
         setIndex((i) => (tracks.length ? Math.min(i, tracks.length - 1) : 0));
     }, [tracks.length]);
 
-    // charger la piste en cours
     useEffect(() => {
         const audio = audioRef.current;
         if (current && audio) {
@@ -193,12 +185,10 @@ export default function RadioDockRight({ className = "" }: { className?: string 
     return (
         <>
             <audio ref={audioRef} onTimeUpdate={onTimeUpdate} onEnded={next} preload="metadata" />
-
             {/* Mobile bar */}
             <div
                 className={`md:hidden fixed left-0 right-0 z-50 border-t ${railColor} backdrop-blur ${className}`}
-                style={{ bottom: avoidPx }}
-            >
+                style={{ bottom: avoidPx }}>
                 <div className="mx-auto max-w-7xl px-3 py-2 pb-[env(safe-area-inset-bottom)]">
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 overflow-hidden rounded-lg bg-white/5 shrink-0">
@@ -235,13 +225,11 @@ export default function RadioDockRight({ className = "" }: { className?: string 
                             max={Number.isFinite(duration) && duration > 0 ? Math.floor(duration) : 0}
                             value={Math.min(Math.floor(progress), Math.floor(duration || 0))}
                             onChange={(e) => onSeek(Number(e.target.value))}
-                            className="w-full accent-white/80"
-                        />
+                            className="w-full accent-white/80" />
                         <span className="text-[10px] tabular-nums text-white/60">{fmtTime(duration)}</span>
                     </div>
                 </div>
             </div>
-
             {/* Mobile overlay (expand) */}
             {expanded && (
                 <div className="md:hidden fixed inset-0 z-[60] bg-[#0b1321]/95 backdrop-blur">
@@ -264,7 +252,6 @@ export default function RadioDockRight({ className = "" }: { className?: string 
                                 <Minimize2 className="h-5 w-5" />
                             </button>
                         </div>
-
                         <div className="flex items-center justify-center gap-4">
                             <button className="rounded-xl border border-white/15 p-3 text-white hover:bg-white/5 transition" onClick={prev} title="Précédent">
                                 <SkipBack className="h-5 w-5" />
@@ -276,7 +263,6 @@ export default function RadioDockRight({ className = "" }: { className?: string 
                                 <SkipForward className="h-5 w-5" />
                             </button>
                         </div>
-
                         <div className="flex items-center gap-2">
                             <span className="text-xs tabular-nums text-white/70">{fmtTime(progress)}</span>
                             <input
@@ -285,11 +271,9 @@ export default function RadioDockRight({ className = "" }: { className?: string 
                                 max={Number.isFinite(duration) && duration > 0 ? Math.floor(duration) : 0}
                                 value={Math.min(Math.floor(progress), Math.floor(duration || 0))}
                                 onChange={(e) => onSeek(Number(e.target.value))}
-                                className="w-full accent-white/80"
-                            />
+                                className="w-full accent-white/80" />
                             <span className="text-xs tabular-nums text-white/70">{fmtTime(duration)}</span>
                         </div>
-
                         <div className="flex items-center gap-3">
                             <Volume2 className="h-4 w-4 text-white/70" />
                             <input
@@ -298,18 +282,15 @@ export default function RadioDockRight({ className = "" }: { className?: string 
                                 max={100}
                                 value={Math.round(volume * 100)}
                                 onChange={(e) => setVolume(Number(e.target.value) / 100)}
-                                className="w-full accent-white/80"
-                            />
+                                className="w-full accent-white/80" />
                         </div>
-
                         <div className="flex-1 overflow-auto rounded-xl border border-white/10">
                             <ul className="divide-y divide-white/5">
                                 {tracks.map((t, i) => (
                                     <li
                                         key={t.id}
                                         className={`px-3 py-2 text-sm cursor-pointer hover:bg-white/5 ${i === index ? "bg-white/5 text-white" : "text-white/80"}`}
-                                        onClick={() => i !== index && setIndex(i)}
-                                    >
+                                        onClick={() => i !== index && setIndex(i)}>
                                         <div className="truncate font-medium">{t.name}</div>
                                         <div className="truncate text-xs text-white/60">{t.artist_name}</div>
                                     </li>
@@ -319,38 +300,30 @@ export default function RadioDockRight({ className = "" }: { className?: string 
                     </div>
                 </div>
             )}
-
             {/* Desktop rail à droite */}
             <aside
                 className={`hidden md:block fixed top-0 right-0 z-50 h-screen ${widthClass} border-l ${railColor} backdrop-blur transition-all duration-300 ${className}`}
-                aria-label="Lecteur Radio vertical"
-            >
+                aria-label="Lecteur Radio vertical">
                 <div className="flex h-full">
                     <div className="flex w-16 shrink-0 flex-col items-center gap-4 py-4">
                         <button
                             onClick={() => setExpanded((e) => !e)}
                             className="rounded-xl border border-white/15 p-2 text-white hover:bg-white/5 transition"
-                            title={expanded ? "Réduire" : "Agrandir"}
-                        >
+                            title={expanded ? "Réduire" : "Agrandir"}>
                             {expanded ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
                         </button>
-
                         <div className="h-12 w-12 overflow-hidden rounded-xl bg-white/5">
                             {cover ? <img src={cover} alt="" className="h-full w-full object-cover" /> : null}
                         </div>
-
                         <button onClick={prev} className="rounded-xl border border-white/15 p-2 text-white hover:bg-white/5 transition" title="Précédent">
                             <SkipBack className="h-4 w-4" />
                         </button>
-
                         <button onClick={togglePlay} className="rounded-2xl border border-white/15 p-3 text-white hover:bg-white/5 transition" title="Lecture / Pause">
                             {playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
                         </button>
-
                         <button onClick={next} className="rounded-xl border border-white/15 p-2 text-white hover:bg-white/5 transition" title="Suivant">
                             <SkipForward className="h-4 w-4" />
                         </button>
-
                         <div className="mt-2 flex flex-col items-center gap-1 text-[10px] text-white/70">
                             <span>{fmtTime(progress)}</span>
                             <VerticalSlider
@@ -358,11 +331,9 @@ export default function RadioDockRight({ className = "" }: { className?: string 
                                 max={Number.isFinite(duration) && duration > 0 ? Math.floor(duration) : 0}
                                 value={Math.min(Math.floor(progress), Math.floor(duration || 0))}
                                 onChange={onSeek}
-                                ariaLabel="Progression"
-                            />
+                                ariaLabel="Progression" />
                             <span>{fmtTime(duration)}</span>
                         </div>
-
                         <div className="mt-2 flex flex-col items-center gap-1 text-[10px] text-white/70">
                             <Volume2 className="h-4 w-4" />
                             <VerticalSlider
@@ -370,11 +341,9 @@ export default function RadioDockRight({ className = "" }: { className?: string 
                                 max={100}
                                 value={Math.round(volume * 100)}
                                 onChange={(v) => setVolume(v / 100)}
-                                ariaLabel="Volume"
-                            />
+                                ariaLabel="Volume" />
                         </div>
                     </div>
-
                     {expanded && (
                         <div className="flex min-w-0 flex-1 flex-col gap-4 p-4">
                             <div>
@@ -385,15 +354,13 @@ export default function RadioDockRight({ className = "" }: { className?: string 
                                     {error ? `Erreur Jamendo: ${error}` : current ? current.artist_name : "Jamendo"}
                                 </div>
                             </div>
-
                             <div className="flex-1 overflow-auto rounded-xl border border-white/10">
                                 <ul className="divide-y divide-white/5">
                                     {tracks.map((t, i) => (
                                         <li
                                             key={t.id}
                                             className={`px-3 py-2 text-sm cursor-pointer hover:bg-white/5 ${i === index ? "bg-white/5 text-white" : "text-white/80"}`}
-                                            onClick={() => i !== index && setIndex(i)}
-                                        >
+                                            onClick={() => i !== index && setIndex(i)}>
                                             <div className="truncate font-medium">{t.name}</div>
                                             <div className="truncate text-xs text-white/60">{t.artist_name}</div>
                                         </li>

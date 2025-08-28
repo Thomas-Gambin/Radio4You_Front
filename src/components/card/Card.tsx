@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import type { Article } from "../../@types/article";
 import type { Podcast } from "../../@types/podcast";
-import { stripHtml, truncateWords, formatDate } from "../../utils";
+import { stripHtml, truncateWords, formatDate, slugify } from "../../utils";
 
 type ContentType = "article" | "podcast";
 
@@ -20,13 +20,19 @@ export default function Card({
     withExcerpt = true,
     maxWords = 30,
 }: Props) {
+    // Extrait le texte à résumer
     const raw =
         type === "article"
             ? (item as Article).content
             : (item as Podcast).description ?? "";
 
     const plain = withExcerpt ? truncateWords(stripHtml(raw), maxWords) : "";
-    const href = type === "article" ? `/articles/${item.id}` : `/podcasts/${item.id}`;
+
+    const titleSlug = slugify(item.title);
+    const href =
+        type === "article"
+            ? `/articles/${item.id}-${titleSlug}`
+            : `/podcasts/${item.id}-${titleSlug}`;
 
     return (
         <Link
@@ -38,8 +44,7 @@ export default function Card({
                         src={item.coverUrl}
                         alt={item.title}
                         className="relative w-72 h-60 object-cover"
-                        loading="lazy"
-                    />
+                        loading="lazy" />
                 </div>
             ) : (
                 <div className="w-40 sm:w-64 md:w-72 flex-shrink-0 bg-white/10 aspect-[16/10]" />

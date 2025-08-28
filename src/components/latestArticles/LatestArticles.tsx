@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { api } from "../../utils/api";
 import { ROUTES } from "../../App";
 import type { Article } from "../../@types/article";
-import { stripHtml, truncateWords, formatDate, pickMembers, Colors } from "../../utils/index";
+import { stripHtml, truncateWords, formatDate, pickMembers, Colors, slugify } from "../../utils/index";
 
 // Récupère les données de l'api en mettant une limit
 async function fetchLatestArticles(limit = 3, signal?: AbortSignal): Promise<Article[]> {
@@ -87,7 +87,7 @@ export default function LatestArticles({ maxWords = 50 }: { maxWords?: number })
                             return (
                                 <article
                                     key={a.id}
-                                    className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:bg-white/[0.08] transition-transform duration-300 hover:scale-[1.03] cursor-pointer">
+                                    className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:bg-white/[0.08] transition-transform duration-300 hover:scale-[1.03]">
                                     {a.coverUrl ? (
                                         <div className="aspect-[16/9] w-full overflow-hidden">
                                             <img
@@ -108,7 +108,7 @@ export default function LatestArticles({ maxWords = 50 }: { maxWords?: number })
                                         {plain && <p className="mt-2 text-sm text-white/70">{plain}</p>}
                                         <div className="mt-3">
                                             <Link
-                                                to={`/articles/${a.id}`}
+                                                to={`/articles/${a.id}-${slugify(a.title)}`}
                                                 className="inline-block rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold text-white hover:bg-white/5 transition">
                                                 Lire l’article
                                             </Link>
@@ -120,7 +120,7 @@ export default function LatestArticles({ maxWords = 50 }: { maxWords?: number })
                 </div>
                 <div className="mt-8 sm:hidden text-center">
                     <Link
-                        to="/articles"
+                        to={ROUTES.ARTICLES}
                         className="inline-block rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-white hover:bg-white/5 transition">
                         Tous les articles
                     </Link>

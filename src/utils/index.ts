@@ -35,3 +35,12 @@ export const Colors = {
     lightBg: "#111a2c"
 };
 
+// Met le titre de l'article/podcast dans l'url
+export function slugify(str: string) {
+    return str
+        .toLowerCase()
+        .normalize("NFD") // supprime les accents
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-") // remplace tout sauf les lettres par -
+        .replace(/(^-|-$)+/g, ""); // supprime tirets en début/fin
+}
