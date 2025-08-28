@@ -1,16 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Article } from "../../@types/article";
-import type { FetchResults } from "../../@types/fetchResults";
 import Card from "../../components/card/Card";
 import { pickMembers } from "../../utils";
 import { api } from "../../utils/api";
 import { ROUTES } from "../../App";
 
-// Définie le nombre d'article qu'on affiche par requete
+// Définie le nombre de podcasts qu'on affiche par requête
 const BATCH = 6;
 
-// Récupère les info de l'url
+// Récupère les infos de l'url
 function getPageFromUrl(u?: string | null): number | null {
     if (!u) return null;
     try {
@@ -22,29 +21,7 @@ function getPageFromUrl(u?: string | null): number | null {
     }
 }
 
-// Récupère toutes les données d'articles depuis l'api avec pagination etc...
-async function fetchArticles(page: number, limit: number, signal?: AbortSignal): Promise<FetchResults<Article>> {
-    const { data } = await api.get("/articles", {
-        params: {
-            page,
-            itemsPerPage: limit,
-            "order[createdAt]": "desc",
-            pagination: true,
-        },
-        signal,
-        headers: { Accept: "application/ld+json" },
-    });
-
-    const items = pickMembers<Article>(data);
-    const view = data?.["hydra:view"] ?? {};
-    const lastPage = getPageFromUrl(view?.["hydra:last"]);
-    const hasNext = Boolean(view?.["hydra:next"]);
-    const lastBatchCount = items.length;
-
-    return { items, lastPage, hasNext, lastBatchCount };
-}
-
-// Prépare les éléments de la page
+// Récupère les articles
 export default function ArticlesPage() {
     const [page, setPage] = useState(1);
     const [items, setItems] = useState<Article[]>([]);
@@ -56,33 +33,44 @@ export default function ArticlesPage() {
 
     useEffect(() => {
         const controller = new AbortController();
+
         (async () => {
             setLoading(true);
             setError(null);
             try {
-                const { items: batch, lastPage, hasNext, lastBatchCount } = await fetchArticles(
-                    page,
-                    BATCH,
-                    controller.signal
-                );
+                const { data } = await api.get("/articles", {
+                    params: {
+                        page,
+                        itemsPerPage: BATCH,
+                        "order[createdAt]": "desc",
+                        pagination: true,
+                    },
+                    signal: controller.signal,
+                    headers: { Accept: "application/ld+json" },
+                });
 
+                const batch = pickMembers<Article>(data);
+                const view = data?.["hydra:view"] ?? {};
+                const last = getPageFromUrl(view?.["hydra:last"]);
+                const next = Boolean(view?.["hydra:next"]);
 
                 setItems((prev) => (page === 1 ? batch : [...prev, ...batch]));
-                setLastPage(lastPage);
-                setHasNext(hasNext);
-                setLastBatchCount(lastBatchCount);
+                setLastPage(last);
+                setHasNext(next);
+                setLastBatchCount(batch.length);
             } catch (e: any) {
-                if (e?.name !== "CanceledError" && e?.message !== "canceled") {
+                if (e?.code !== "ERR_CANCELED" && e?.name !== "CanceledError") {
                     setError(e?.message ?? "Erreur inconnue");
                 }
             } finally {
                 setLoading(false);
             }
         })();
+
         return () => controller.abort();
     }, [page]);
 
-    // Permet de savoir si il reste des articles
+    // Permet de savoir si il reste des podcasts
     const hasMore = useMemo(() => {
         if (lastPage !== null) return page < lastPage;
         if (hasNext) return true;
@@ -93,7 +81,9 @@ export default function ArticlesPage() {
         <section className="relative isolate">
             <div className="mx-auto max-w-7xl px-4 py-10 md:px-6 md:py-14">
                 <div className="mb-6 md:mb-8 flex items-center justify-between">
-                    <h1 className="text-2xl md:text-3xl font-extrabold text-white text-center md:text-left w-full">Tous les articles</h1>
+                    <h1 className="text-2xl md:text-3xl font-extrabold text-white text-center md:text-left w-full">
+                        Tous les articles
+                    </h1>
                     <Link
                         to={ROUTES.HOME}
                         className="hidden sm:inline-block text-sm font-semibold text-white/80 hover:text-white transition">
@@ -103,7 +93,9 @@ export default function ArticlesPage() {
                 <div className="flex flex-col gap-6">
                     {loading && items.length === 0 &&
                         Array.from({ length: BATCH }).map((_, i) => (
-                            <div key={`s-${i}`} className="rounded-2xl border border-white/10 bg-white/5 p-3 animate-pulse">
+                            <div
+                                key={`s-${i}`}
+                                className="rounded-2xl border border-white/10 bg-white/5 p-3 animate-pulse">
                                 <div className="aspect-[16/9] w-full rounded-xl bg-white/10" />
                                 <div className="mt-3 h-5 w-3/4 rounded bg-white/10" />
                                 <div className="mt-2 h-4 w-full rounded bg-white/10" />
@@ -135,6 +127,6 @@ export default function ArticlesPage() {
                     ) : null}
                 </div>
             </div>
-        </section >
+        </section>
     );
 }
