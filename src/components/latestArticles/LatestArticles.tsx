@@ -4,6 +4,7 @@ import { api } from "../../utils/api";
 import { ROUTES } from "../../App";
 import type { Article } from "../../@types/article";
 import { stripHtml, truncateWords, formatDate, pickMembers, Colors, slugify } from "../../utils/index";
+import { coverOriginalUrl } from "../../utils/media";
 
 // Récupère les données de l'api en mettant une limit
 async function fetchLatestArticles(limit = 3, signal?: AbortSignal): Promise<Article[]> {
@@ -15,14 +16,26 @@ async function fetchLatestArticles(limit = 3, signal?: AbortSignal): Promise<Art
         },
         signal,
     });
+
     const raw: any[] = pickMembers(data);
-    return raw.slice(0, limit).map((a: any) => ({
-        id: a.id,
-        title: a.title ?? "Sans titre",
-        coverUrl: a.coverUrl ?? a.cover?.url ?? a.image?.url ?? a.image ?? undefined,
-        content: a.content ?? a.body ?? a.excerpt ?? "",
-        publishedAt: a.publishedAt ?? a.createdAt ?? a.date ?? null,
-    }));
+    return raw.slice(0, limit).map((a: any) => {
+        const candidate =
+            a.coverUrl ??
+            a.cover?.url ??
+            a.image?.url ??
+            a.image ??
+            undefined;
+
+        const absolute = coverOriginalUrl(candidate) ?? undefined;
+
+        return {
+            id: a.id,
+            title: a.title ?? "Sans titre",
+            coverUrl: absolute,
+            content: a.content ?? a.body ?? a.excerpt ?? "",
+            createdAt: a.createdAt ?? a.publishedAt ?? a.date ?? null,
+        } as Article;
+    });
 }
 
 export default function LatestArticles({ maxWords = 50 }: { maxWords?: number }) {

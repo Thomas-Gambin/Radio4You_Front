@@ -4,6 +4,7 @@ import { api } from "../../utils/api";
 import type { Podcast } from "../../@types/podcast";
 import { stripHtml, truncateWords, formatDate, pickMembers, Colors, slugify } from "../../utils";
 import { ROUTES } from "../../App";
+import { coverOriginalUrl } from "../../utils/media";
 
 // Récupère les données de l'api en mettant une limite
 async function fetchLatestPodcasts(limit = 3, signal?: AbortSignal): Promise<Podcast[]> {
@@ -19,12 +20,24 @@ async function fetchLatestPodcasts(limit = 3, signal?: AbortSignal): Promise<Pod
     const raw: any[] = pickMembers(data);
     return raw.slice(0, limit).map((p: any): Podcast => {
         const src = p?.attributes ? { id: p.id, ...p.attributes } : p;
+
+        const candidate =
+            src.coverUrl ??
+            src.cover?.url ??
+            src.image?.url ??
+            src.image ??
+            undefined;
+
+        // Transforme en URL absolue 
+        const absolute = coverOriginalUrl(candidate) ?? undefined;
+
         return {
             id: src.id,
             title: src.title ?? "Sans titre",
-            coverUrl: src.coverUrl ?? src.cover?.url ?? src.image?.url ?? src.image ?? undefined,
+            coverUrl: absolute,
             description: src.description ?? src.content ?? src.summary ?? "",
-            createdAt: (src.createdAt ?? src.publishedAt ?? src.date ?? null),
+            createdAt: src.createdAt ?? src.publishedAt ?? src.date ?? null,
+            videoUrl: src.videoUrl ?? src.video ?? null,
         };
     });
 }
@@ -60,12 +73,10 @@ export default function LatestPodcasts({ maxWords = 40 }: { maxWords?: number })
                     </h2>
                     <Link
                         to={ROUTES.PODCASTS}
-                        className="hidden sm:inline-block text-sm font-semibold text-white/80 hover:text-white transition"
-                    >
+                        className="hidden sm:inline-block text-sm font-semibold text-white/80 hover:text-white transition">
                         Tous les podcasts →
                     </Link>
                 </div>
-
                 <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
                     {loading &&
                         Array.from({ length: 3 }).map((_, i) => (
@@ -79,62 +90,54 @@ export default function LatestPodcasts({ maxWords = 40 }: { maxWords?: number })
                                 <div className="mt-2 h-4 w-5/6 rounded bg-white/10" />
                             </div>
                         ))}
-
                     {!loading && err && (
                         <div className="col-span-full rounded-xl border border-red-400/30 bg-red-400/10 p-4 text-red-200">
                             Erreur de chargement des podcasts : {err}
                         </div>
                     )}
-
                     {!loading && !err && pods.length === 0 && (
                         <div className="col-span-full rounded-xl border border-white/10 bg-white/5 p-6 text-white/80 text-center">
                             Aucun podcast pour le moment.
                         </div>
                     )}
-
                     {!loading &&
                         !err &&
                         pods.map((p) => {
                             const plain = truncateWords(stripHtml(p.description ?? ""), maxWords);
-
                             return (
                                 <article
                                     key={p.id}
-                                    className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:bg-white/[0.08] transition-transform duration-300 hover:scale-[1.03]"
-                                >
+                                    className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:bg-white/[0.08] transition-transform duration-300 hover:scale-[1.03]">
                                     {p.coverUrl ? (
-                                        <div className="aspect-[16/9] w-full overflow-hidden">
+                                        <div className="aspect-[16/9] w-full overflow-hidden bg-white/5">
                                             <img
                                                 src={p.coverUrl}
                                                 alt={p.title}
-                                                className="h-full w-full object-cover"
+                                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                                                 loading="lazy"
-                                            />
+                                                onError={(e) => {
+                                                    (e.currentTarget as HTMLImageElement).style.display = "none";
+                                                }} />
                                         </div>
                                     ) : (
                                         <div className="aspect-[16/9] w-full bg-white/5" />
                                     )}
-
                                     <div className="p-4">
                                         {p.createdAt && (
                                             <time className="text-xs uppercase tracking-wide text-white/60">
                                                 {formatDate(p.createdAt)}
                                             </time>
                                         )}
-
                                         <h3 className="mt-1 line-clamp-2 text-lg font-bold text-white">
                                             {p.title}
                                         </h3>
-
                                         {plain && (
                                             <p className="mt-2 text-sm text-white/70">{plain}</p>
                                         )}
-
                                         <div className="mt-3">
                                             <Link
                                                 to={`/podcasts/${p.id}-${slugify(p.title)}`}
-                                                className="inline-block rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold text-white hover:bg-white/5 transition"
-                                            >
+                                                className="inline-block rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold text-white hover:bg-white/5 transition">
                                                 Écouter
                                             </Link>
                                         </div>
@@ -146,8 +149,7 @@ export default function LatestPodcasts({ maxWords = 40 }: { maxWords?: number })
                 <div className="mt-8 sm:hidden text-center">
                     <Link
                         to={ROUTES.PODCASTS}
-                        className="inline-block rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-white hover:bg-white/5 transition"
-                    >
+                        className="inline-block rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-white hover:bg-white/5 transition">
                         Tous les podcasts
                     </Link>
                 </div>

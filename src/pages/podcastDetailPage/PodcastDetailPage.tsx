@@ -5,6 +5,8 @@ import type { Podcast } from "../../@types/podcast";
 import { formatDate } from "../../utils";
 import { api } from "../../utils/api";
 import { sanitizeHtml } from "../../utils/sanitize";
+import { ROUTES } from "../../App";
+import { coverOriginalUrl } from "../../utils/media";
 
 // Extraction de l'ID YouTube
 function getYouTubeId(url?: string | null): string | null {
@@ -24,7 +26,7 @@ function getYouTubeId(url?: string | null): string | null {
     } catch {
     }
 
-    // récupère l'id de la vidéo si le format n'est pas bon pour l'adapter à un format ok
+    // récupère l'id si le format est pas bon
     const m2 = url.match(/([A-Za-z0-9_-]{11})(?:\?.*)?$/);
     return m2 ? m2[1] : null;
 }
@@ -36,6 +38,7 @@ export default function PodcastDetailPage() {
 
     const [podcast, setPodcast] = useState<Podcast | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [imgError, setImgError] = useState(false);
 
     useEffect(() => {
         if (!id) {
@@ -47,16 +50,35 @@ export default function PodcastDetailPage() {
 
         (async () => {
             try {
-                const res = await api.get<Podcast>(`/podcasts/${id}`, {
+                const res = await api.get<any>(`/podcasts/${id}`, {
                     signal: controller.signal,
                     headers: { Accept: "application/ld+json, application/json" },
                 });
-                setPodcast(res.data);
-                if (res.data?.title) document.title = `${res.data.title} — Radio4You`;
+
+                const p = res.data;
+
+                const candidate =
+                    p.coverUrl ??
+                    p.cover?.url ??
+                    p.image?.url ??
+                    p.image ??
+                    undefined;
+
+                const absolute = coverOriginalUrl(candidate) ?? undefined;
+
+                const normalized: Podcast = {
+                    id: p.id,
+                    title: p.title ?? "Sans titre",
+                    description: p.description ?? p.content ?? "",
+                    coverUrl: absolute,
+                    videoUrl: p.videoUrl ?? p.video ?? null,
+                    createdAt: p.createdAt ?? p.publishedAt ?? p.date ?? null,
+                };
+
+                setPodcast(normalized);
+                if (normalized?.title) document.title = `${normalized.title} — Radio4You`;
             } catch (err: any) {
-                if (err?.code === "ERR_CANCELED" || err?.name === "CanceledError") {
-                    return;
-                }
+                if (err?.code === "ERR_CANCELED" || err?.name === "CanceledError") return;
                 if (err?.response?.status === 404) {
                     navigate("/404");
                     return;
@@ -72,18 +94,21 @@ export default function PodcastDetailPage() {
     if (!podcast) return <p className="text-gray-400 px-4 py-8">Chargement…</p>;
 
     const safeHtml = sanitizeHtml(podcast.description ?? "");
-
     const ytId = getYouTubeId(podcast.videoUrl);
     const embedSrc = ytId ? `https://www.youtube.com/embed/${encodeURIComponent(ytId)}?rel=0` : null;
 
     return (
         <article className="max-w-3xl mx-auto px-4 py-10 text-white">
-            {podcast.coverUrl && (
+            {podcast.coverUrl && !imgError ? (
                 <img
                     src={podcast.coverUrl}
                     alt={podcast.title}
                     className="w-full rounded-2xl shadow-lg mb-6 object-cover max-h-[300px]"
-                    loading="eager" />
+                    loading="eager"
+                    onError={() => setImgError(true)}
+                />
+            ) : (
+                <div className="w-full rounded-2xl shadow-lg mb-6 bg-white/10 aspect-[16/9]" />
             )}
             <h1 className="mt-2 text-3xl md:text-4xl font-bold mb-3 text-center">
                 {podcast.title}
@@ -96,7 +121,8 @@ export default function PodcastDetailPage() {
             {podcast.description ? (
                 <div
                     className="prose prose-invert max-w-none leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: safeHtml }} />
+                    dangerouslySetInnerHTML={{ __html: safeHtml }}
+                />
             ) : (
                 <p className="text-white/60 italic">Pas de description.</p>
             )}
@@ -111,13 +137,14 @@ export default function PodcastDetailPage() {
                             allowFullScreen
                             referrerPolicy="strict-origin-when-cross-origin"
                             className="absolute inset-0 h-full w-full rounded-xl border border-white/10"
-                            loading="lazy" />
+                            loading="lazy"
+                        />
                     </div>
                 </div>
             )}
             <div className="mt-10 flex justify-center md:justify-start">
                 <Link
-                    to="/podcasts"
+                    to={ROUTES.PODCASTS}
                     className="rounded-xl border border-white/20 px-5 py-3 hover:bg-white/10">
                     ← Retour à la liste
                 </Link>
