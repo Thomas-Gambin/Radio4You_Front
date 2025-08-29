@@ -5,59 +5,59 @@ import Card from "../../components/card/Card";
 import { pickMembers } from "../../utils";
 import { api } from "../../utils/api";
 import { ROUTES } from "../../App";
+import { coverOriginalUrl } from "../../utils/media";
 
-// Définie le nombre de podcasts qu'on affiche par requête
 const BATCH = 6;
 
-// Récupère les infos de l'url
-function getPageFromUrl(u?: string | null): number | null {
-    if (!u) return null;
-    try {
-        const url = u.startsWith("http") ? new URL(u) : new URL(u, window.location.origin);
-        const p = url.searchParams.get("page");
-        return p ? Number(p) : null;
-    } catch {
-        return null;
-    }
-}
-
-// Récupère les articles
+// Recupere l'api
 export default function PodcastsPage() {
-    const [page, setPage] = useState(1);
-    const [items, setItems] = useState<Podcast[]>([]);
-    const [lastPage, setLastPage] = useState<number | null>(null);
-    const [hasNext, setHasNext] = useState(false);
-    const [lastBatchCount, setLastBatchCount] = useState(0);
+    const [uiPage, setUiPage] = useState(1);
+    const [allItems, setAllItems] = useState<Podcast[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // inverse pour afficher le dernier en 1er
     useEffect(() => {
         const controller = new AbortController();
-
         (async () => {
             setLoading(true);
             setError(null);
             try {
                 const { data } = await api.get("/podcasts", {
-                    params: {
-                        page,
-                        itemsPerPage: BATCH,
-                        "order[createdAt]": "desc",
-                        pagination: true,
-                    },
+                    params: { pagination: false },
                     signal: controller.signal,
-                    headers: { Accept: "application/ld+json" },
+                    headers: { Accept: "application/ld+json, application/json" },
                 });
 
-                const batch = pickMembers<Podcast>(data);
-                const view = data?.["hydra:view"] ?? {};
-                const last = getPageFromUrl(view?.["hydra:last"]);
-                const next = Boolean(view?.["hydra:next"]);
+                const raw = pickMembers<any>(data);
 
-                setItems((prev) => (page === 1 ? batch : [...prev, ...batch]));
-                setLastPage(last);
-                setHasNext(next);
-                setLastBatchCount(batch.length);
+                // Tri par id décroissant
+                raw.sort((a, b) => Number(b?.id ?? 0) - Number(a?.id ?? 0));
+
+                // on gère l'url de l'image ou on en met une par defaut
+                const normalized: Podcast[] = raw.map((p: any) => {
+                    const src = p?.attributes ? { id: p.id, ...p.attributes } : p;
+                    const candidate =
+                        src.coverUrl ??
+                        src.cover?.url ??
+                        src.image?.url ??
+                        src.image ??
+                        undefined;
+
+                    return {
+                        id: src.id,
+                        title: src.title ?? "Sans titre",
+                        description: src.description ?? src.content ?? src.summary ?? "",
+                        coverUrl: coverOriginalUrl(candidate),
+                        createdAt: src.createdAt ?? src.publishedAt ?? src.date ?? null,
+                        updatedAt: src.updatedAt ?? null,
+                        audioUrl: src.audioUrl ?? src.audio ?? null,
+                        videoUrl: src.videoUrl ?? src.video ?? null,
+                    } as Podcast;
+                });
+
+                setAllItems(normalized);
+                setUiPage(1);
             } catch (e: any) {
                 if (e?.code !== "ERR_CANCELED" && e?.name !== "CanceledError") {
                     setError(e?.message ?? "Erreur inconnue");
@@ -66,16 +66,15 @@ export default function PodcastsPage() {
                 setLoading(false);
             }
         })();
-
         return () => controller.abort();
-    }, [page]);
+    }, []);
 
-    // Permet de savoir si il reste des podcasts
-    const hasMore = useMemo(() => {
-        if (lastPage !== null) return page < lastPage;
-        if (hasNext) return true;
-        return lastBatchCount === BATCH;
-    }, [page, lastPage, hasNext, lastBatchCount]);
+    const items = useMemo(() => {
+        const end = uiPage * BATCH;
+        return allItems.slice(0, end);
+    }, [allItems, uiPage]);
+
+    const hasMore = items.length < allItems.length;
 
     return (
         <section className="relative isolate">
@@ -119,7 +118,7 @@ export default function PodcastsPage() {
                 <div className="mt-10 text-center">
                     {hasMore ? (
                         <button
-                            onClick={() => setPage((p) => p + 1)}
+                            onClick={() => setUiPage((p) => p + 1)}
                             disabled={loading}
                             className="inline-flex items-center gap-2 rounded-2xl border border-white/15 px-6 py-3 text-sm font-semibold text-white hover:bg-white/5 disabled:opacity-60 transition">
                             {loading ? "Chargement…" : "Voir plus"}

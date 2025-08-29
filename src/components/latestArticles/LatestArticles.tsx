@@ -6,34 +6,33 @@ import type { Article } from "../../@types/article";
 import { stripHtml, truncateWords, formatDate, pickMembers, Colors, slugify } from "../../utils/index";
 import { coverOriginalUrl } from "../../utils/media";
 
-// Récupère les données de l'api en mettant une limit
+//On récupère les données de l'api
 async function fetchLatestArticles(limit = 3, signal?: AbortSignal): Promise<Article[]> {
     const { data } = await api.get("/articles", {
         params: {
-            page: 1,
-            itemsPerPage: limit,
-            "order[createdAt]": "desc",
+            pagination: false,
         },
         signal,
+        headers: { Accept: "application/ld+json, application/json" },
     });
 
     const raw: any[] = pickMembers(data);
-    return raw.slice(0, limit).map((a: any) => {
-        const candidate =
-            a.coverUrl ??
-            a.cover?.url ??
-            a.image?.url ??
-            a.image ??
-            undefined;
 
-        const absolute = coverOriginalUrl(candidate) ?? undefined;
+    const last3 = raw
+        .slice()
+        .sort((a, b) => Number(b?.id ?? 0) - Number(a?.id ?? 0))
+        .slice(0, limit);
 
+    // on gère l'url de l'image ou on en met une par defaut
+    return last3.map((a: any) => {
+        const candidate = a.coverUrl ?? a.cover?.url ?? a.image?.url ?? a.image ?? undefined;
         return {
             id: a.id,
             title: a.title ?? "Sans titre",
-            coverUrl: absolute,
+            coverUrl: coverOriginalUrl(candidate),
             content: a.content ?? a.body ?? a.excerpt ?? "",
             createdAt: a.createdAt ?? a.publishedAt ?? a.date ?? null,
+            updatedAt: a.updatedAt ?? null,
         } as Article;
     });
 }
@@ -101,18 +100,14 @@ export default function LatestArticles({ maxWords = 50 }: { maxWords?: number })
                                 <article
                                     key={a.id}
                                     className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:bg-white/[0.08] transition-transform duration-300 hover:scale-[1.03]">
-                                    {a.coverUrl ? (
-                                        <div className="aspect-[16/9] w-full overflow-hidden">
-                                            <img
-                                                src={a.coverUrl}
-                                                alt={a.title}
-                                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                                                loading="lazy"
-                                            />
-                                        </div>
-                                    ) : (
-                                        <div className="aspect-[16/9] w-full bg-white/5" />
-                                    )}
+                                    <div className="aspect-[16/9] w-full overflow-hidden">
+                                        <img
+                                            src={a.coverUrl}
+                                            alt={a.title}
+                                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                                            loading="lazy"
+                                        />
+                                    </div>
                                     <div className="p-4">
                                         <time className="text-xs uppercase tracking-wide text-white/60">
                                             {formatDate(a.createdAt)}
