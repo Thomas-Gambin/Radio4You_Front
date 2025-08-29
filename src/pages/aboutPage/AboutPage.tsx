@@ -76,7 +76,7 @@ export default function AboutPage() {
                     </p>
                     <div className="mt-4">
                         <Link
-                            to="/contact"
+                            to={ROUTES.CONTACT}
                             className="inline-block rounded-xl border border-white/20 px-5 py-3 font-semibold hover:bg-white/10">
                             Nous contacter
                         </Link>

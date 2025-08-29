@@ -61,7 +61,7 @@ export default function Footer() {
                                 <h3 className="text-sm font-semibold uppercase tracking-wider text-white/70">Informations</h3>
                                 <ul className="mt-3 space-y-2">
                                     <li><a href="mailto:contact@radio4you.fr" className={linkCls}>contact@radio4you.fr</a></li>
-                                    <li><Link to="/mentions-legales" className={linkCls}>Mentions légales</Link></li>
+                                    <li><Link to={ROUTES.LEGAL} className={linkCls}>Mentions légales</Link></li>
                                 </ul>
                             </nav>
                         </div>

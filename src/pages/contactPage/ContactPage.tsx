@@ -1,6 +1,4 @@
-// src/pages/contact/ContactPage.tsx
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import type { FormData } from "../../@types/mail";
 
 const initial: FormData = {
@@ -97,9 +95,9 @@ export default function ContactPage() {
                     <aside className="md:col-span-2 rounded-2xl border border-white/10 bg-white/5 p-6">
                         <h2 className="text-xl font-bold">Pourquoi sponsoriser ?</h2>
                         <ul className="mt-3 space-y-2 text-white/80">
-                            <li>• Audience engagée et qualifiée</li>
-                            <li>• Formats natifs, non intrusifs</li>
-                            <li>• Mesure claire des performances</li>
+                            <li>• Audience élevée</li>
+                            <li>• Visibilité nationale</li>
+                            <li>• Actif sur l'actualité en lien avec la musique </li>
                         </ul>
                         <div className="mt-6 rounded-xl border border-green-400/30 bg-green-400/10 p-4">
                             <p className="text-sm text-white/80">
@@ -231,10 +229,7 @@ export default function ContactPage() {
                                 checked={data.consent}
                                 onChange={(e) => onChange("consent", e.target.checked)} />
                             <span>
-                                J’accepte que mes informations soient utilisées pour être recontacté·e.{" "}
-                                <Link to="/confidentialite" className="underline hover:no-underline">
-                                    Politique de confidentialité
-                                </Link>.
+                                J’accepte que mes informations soient utilisées pour être recontacté
                             </span>
                         </label>
                         <div className="pt-2 flex flex-col sm:flex-row gap-3">
