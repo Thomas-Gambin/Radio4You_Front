@@ -13,8 +13,8 @@ export const ROUTES = {
   HOME: '/',
   ARTICLES: '/articles',
   PODCASTS: '/podcasts',
-  ARTICLE: '/articles/:slug',
-  PODCAST: '/podcasts/:slug',
+  ARTICLE: '/articles/:idslug',
+  PODCAST: '/podcasts/:idslug',
   ABOUT: '/a-propos',
   CONTACT: '/devenir-sponsor',
   LEGAL: '/mention-legale'
