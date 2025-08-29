@@ -52,8 +52,8 @@ export default function Footer() {
                             <nav>
                                 <h3 className="text-sm font-semibold uppercase tracking-wider text-white/70">Ressources</h3>
                                 <ul className="mt-3 space-y-2">
-                                    <li><Link to="/a-propos" className={linkCls}>À propos</Link></li>
-                                    <li><Link to="/sponsors" className={linkCls}>Devenir sponsor</Link></li>
+                                    <li><Link to={ROUTES.ABOUT} className={linkCls}>À propos</Link></li>
+                                    <li><Link to={ROUTES.CONTACT} className={linkCls}>Devenir sponsor</Link></li>
                                 </ul>
                             </nav>
                             {/* Informations */}

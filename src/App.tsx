@@ -5,6 +5,8 @@ import ArticlesPage from './pages/articlesPage/ArticlesPage';
 import PodcastsPage from './pages/podcastsPage/PodcastsPage';
 import ArticleDetailPage from './pages/articleDetailPage/ArticleDetailPage';
 import PodcastDetailPage from './pages/podcastDetailPage/PodcastDetailPage';
+import AboutPage from './pages/aboutPage/AboutPage';
+import ContactPage from './pages/contactPage/ContactPage';
 
 export const ROUTES = {
   HOME: '/',
@@ -12,6 +14,8 @@ export const ROUTES = {
   PODCASTS: '/podcasts',
   ARTICLE: '/articles/:slug',
   PODCAST: '/podcasts/:slug',
+  ABOUT: '/a-propos',
+  CONTACT: '/devenir-sponsor'
 }
 
 export default function App() {
@@ -23,6 +27,8 @@ export default function App() {
         <Route path={ROUTES.PODCASTS} element={<PodcastsPage />} />
         <Route path={ROUTES.ARTICLE} element={<ArticleDetailPage />} />
         <Route path={ROUTES.PODCAST} element={<PodcastDetailPage />} />
+        <Route path={ROUTES.ABOUT} element={<AboutPage />} />
+        <Route path={ROUTES.CONTACT} element={<ContactPage />} />
       </Route>
     </Routes>
   )
