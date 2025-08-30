@@ -29,6 +29,7 @@ export default function Header() {
                     {[
                         { label: "Accueil", to: ROUTES.HOME },
                         { label: "Articles", to: ROUTES.ARTICLES },
+                        { label: "En direct", to: ROUTES.DIRECT },
                         { label: "Podcast", to: ROUTES.PODCASTS },
                     ].map((link) => (
                         <Link
@@ -78,6 +79,7 @@ export default function Header() {
                     {[
                         { label: "Accueil", to: ROUTES.HOME },
                         { label: "Articles", to: ROUTES.ARTICLES },
+                        { label: "En direct", to: ROUTES.DIRECT },
                         { label: "Podcast", to: ROUTES.PODCASTS },
                     ].map((link) => (
                         <Link

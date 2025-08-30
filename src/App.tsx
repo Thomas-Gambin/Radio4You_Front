@@ -8,6 +8,7 @@ import PodcastDetailPage from './pages/podcastDetailPage/PodcastDetailPage';
 import AboutPage from './pages/aboutPage/AboutPage';
 import ContactPage from './pages/contactPage/ContactPage';
 import LegalPage from './pages/legalPage/LegalPage';
+import EnDirectPage from './pages/enDirectPage/EnDirectPage';
 
 export const ROUTES = {
   HOME: '/',
@@ -17,7 +18,8 @@ export const ROUTES = {
   PODCAST: '/podcasts/:idslug',
   ABOUT: '/a-propos',
   CONTACT: '/devenir-sponsor',
-  LEGAL: '/mention-legale'
+  LEGAL: '/mention-legale',
+  DIRECT: '/en-direct',
 }
 
 export default function App() {
@@ -32,6 +34,7 @@ export default function App() {
         <Route path={ROUTES.ABOUT} element={<AboutPage />} />
         <Route path={ROUTES.CONTACT} element={<ContactPage />} />
         <Route path={ROUTES.LEGAL} element={<LegalPage />} />
+        <Route path={ROUTES.DIRECT} element={<EnDirectPage />} />
       </Route>
     </Routes>
   )
