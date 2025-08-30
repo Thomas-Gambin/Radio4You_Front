@@ -1,69 +1,35 @@
-# React + TypeScript + Vite
+# Radio4You — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🚀 Installation de projet
+```bash
+pnpm install
+```
+Télécharger le repo back et l'installer pour avoir acces à la BDD : https://github.com/Thomas-Gambin/Radio4You_Back
 
-Currently, two official plugins are available:
+## ⚙️ Configuration (.env)
+Créez un fichier **`.env`** à la racine du projet avec :
+```ini
+VITE_API_BASE_URL=http://localhost:XXXX
+VITE_JAMENDO_CLIENT_ID=688388ee
+```
+Remplacez `XXXX` par le port de votre backend (ex. `8888`).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## ▶️ Lancer le projet
+```bash
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🧭 Routes disponibles
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| Route              | Description                              |
+|--------------------|------------------------------------------|
+| `/`                | Accueil.                                  |
+| `/podcasts`        | Liste des podcasts.                       |
+| `/podcasts/id`     | Détail du podcast.                        |
+| `/articles`        | Liste des articles.                       |
+| `/articles/id`     | Détail de l'article.                      |
+| `/en-direct`       | Diffuse une radio en direct.              |
+| `/a-propos`        | Page à propos.                            |
+| `/devenir-sponsor` | Page de contact pour sponsor.             |
+| `/mention-legale`  | Page des mentions légales.                |
+| `/404`             | Page introuvable.                         |
