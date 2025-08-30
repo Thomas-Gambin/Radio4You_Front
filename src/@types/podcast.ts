@@ -5,4 +5,5 @@ export type Podcast = {
     description?: string;
     createdAt: string;
     videoUrl?: string;
+    videoPath?: string;
 }
