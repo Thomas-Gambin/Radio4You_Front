@@ -20,7 +20,7 @@ export default function Header() {
                     onClick={closeMenu}
                     className="flex items-center gap-3">
                     <img className="h-15 object-contain" src="/logo.svg" alt="Logo Dev4You" />
-                    <span className="hidden sm:inline-block text-base md:text-2xl font-extrabold leading-none">
+                    <span className="hidden sm:inline-block text-base md:text-4xl font-extrabold leading-none">
                         Radio<span className="text-[#3dd267]">4You</span>
                     </span>
                 </Link>
@@ -28,7 +28,7 @@ export default function Header() {
                 <nav className="absolute left-1/2 hidden -translate-x-1/2 md:flex items-center gap-12">
                     {[
                         { label: "Accueil", to: ROUTES.HOME },
-                        { label: "Articles", to: ROUTES.ARTICLES },
+                        { label: "Blogs", to: ROUTES.ARTICLES },
                         { label: "En direct", to: ROUTES.DIRECT },
                         { label: "Podcast", to: ROUTES.PODCASTS },
                     ].map((link) => (

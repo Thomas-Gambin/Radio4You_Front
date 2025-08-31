@@ -44,7 +44,7 @@ export default function Footer() {
                                 <h3 className="text-sm font-semibold uppercase tracking-wider text-white/70">Navigation</h3>
                                 <ul className="mt-3 space-y-2">
                                     <li><Link to={ROUTES.HOME} className={linkCls}>Accueil</Link></li>
-                                    <li><Link to={ROUTES.ARTICLES} className={linkCls}>Articles</Link></li>
+                                    <li><Link to={ROUTES.ARTICLES} className={linkCls}>Blogs</Link></li>
                                     <li><Link to={ROUTES.DIRECT} className={linkCls}>En direct</Link></li>
                                     <li><Link to={ROUTES.PODCASTS} className={linkCls}>Podcasts</Link></li>
                                 </ul>

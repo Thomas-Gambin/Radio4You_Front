@@ -11,6 +11,7 @@ Créez un fichier **`.env`** à la racine du projet avec :
 ```ini
 VITE_API_BASE_URL=http://localhost:XXXX
 VITE_JAMENDO_CLIENT_ID=688388ee
+VITE_RADIOFRANCE_API_TOKEN=2c5248a1-aa50-4e29-8673-55f57b0cc364
 ```
 Remplacez `XXXX` par le port de votre backend (ex. `8888`).
 

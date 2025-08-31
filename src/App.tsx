@@ -13,9 +13,9 @@ import NotFoundPage from './pages/404/404';
 
 export const ROUTES = {
   HOME: '/',
-  ARTICLES: '/articles',
+  ARTICLES: '/blogs',
   PODCASTS: '/podcasts',
-  ARTICLE: '/articles/:idslug',
+  ARTICLE: '/blogs/:idslug',
   PODCAST: '/podcasts/:idslug',
   ABOUT: '/a-propos',
   CONTACT: '/devenir-sponsor',
